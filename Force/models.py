@@ -1,7 +1,53 @@
 from django.db import models
-from django_postgresql.fields.arrays import ArrayField
-from django_postgresql.manager import PgManager
+#from django_postgresql.manager import PgManager
 from django.contrib.gis.db import models
+
+import dbarray
+
+#==================================================#
+# Created Dan marrable 4/09/2012
+# d.marrable@ivec.org
+#
+# Edits :: Name : Date : description
+#
+#==================================================#
+
+class deployment(models.Model):
+    ''' 
+    @brief This is the abstract deployment class.  
+    '''
+    startPosition=models.PointField()
+    startTimeStamp=models.DateTimeField()
+    endTimeStamp=models.DateTimeField()
+    missionAim=models.TextField()
+    minDepth=models.FloatField() # IT seems there is no double in Django
+    maxDepth=models.FloatField()
+
+    #class Meta:
+    #    abstract = True
+
+class image(models.Model):
+    '''
+    @brief This is the abstract image class, mono images reference use the left imgage field
+    '''
+
+    # ??? Maybe make an image reference class and instantiate left and right instances ?????
+
+    deployment=models.ForeignKey(deployment)
+    leftThumbnailReference=models.ImageField(upload_to='photos/%Y/%m/%d')
+    leftImageReference=models.URLField()
+    dateTime=models.DateTimeField()
+    imagePosition=models.PointField()
+    temperature=models.FloatField()
+    salinity=models.FloatField()
+    pitch=models.FloatField()
+    roll=models.FloatField()
+    yaw=models.FloatField()
+    altitude=models.FloatField()
+    depth=models.FloatField()
+
+    #class Meta:
+    #    abstract = True
 
 class campaign(models.Model):
     '''
@@ -18,10 +64,12 @@ class campaign(models.Model):
     #==================================================#
 
     description=models.TextField()
-    associatedResearchers=ArrayField(dbtype='text',null=True)
-    associatedPublications=ArrayField(dbtype='text',null=True)
-    associatedResearchGrant=ArrayField(dbtype='text',null=True)
-    deployments=models.UniqueField()
+    associatedResearchers=dbarray.TextArrayField()
+    associatedPublications=dbarray.TextArrayField()
+    associatedResearchGrant=dbarray.TextArrayField()
+    deployments=models.ForeignKey(deployment)
+    dateStart=models.DateTimeField()
+    dateEnd=models.DateTimeField() # There is a "DateField" do we need time here ?
 
 class users(models.Model):
     '''
@@ -39,7 +87,7 @@ class users(models.Model):
     organisation=models.CharField(max_length=200)
     email=models.EmailField()
  
-class auvDeployment(modles.Model):
+class auvDeployment(deployment):
     '''
     @brief AUV meta data
     '''
@@ -52,13 +100,57 @@ class auvDeployment(modles.Model):
     # missionAim : <Text>
     # minDepth : <double>
     # maxDepth : <double> 
+    #--------------------------------------------------#
+    # Maybe need to add unique AUV fields here later when
+    # we have more deployments
     #==================================================#
 
-    startPosition=models.PointField()
-    distanceCovered=models.DoubleField()
-    startTimeStamp=models.DateTimeField()
-    endTimeStamp=models.DateTimeField()
     transectShape=models.PolygonField()
-    missionAim=models.TextField()
-    minDepth=models.DoubleField()
-    maxDepth=models.DoubleField()
+    distanceCovered=models.FloatField()
+
+class stereoImages(image):
+    '''
+    @brief
+    '''
+    #==================================================#
+    # deployment : <deployment ID>
+    # leftThumbnailReference : <Text blob>
+    # leftImageReference : <url>
+    # rightThumbnailReference : <Text blob>
+    # rightImageReference : <url>
+    # dateTime : <DateTime>
+    # imagePosition : <point>
+    # Temperature : <real>
+    # Salinity : <real>
+    # Pitch : <real>
+    # Roll : <real>
+    # Yaw : <real>
+    # altitude : <real>
+    # depth : <real>
+    #==================================================#
+
+    rightThumbnailReference=models.ImageField(upload_to='photos/%Y/%m/%d')
+    rightImageReference=models.URLField()
+
+class annotations(models.Model):
+    '''
+    @brief
+    '''
+
+    # ??? Do we want differnt annotation types?  ie an abstract class ???
+
+    #==================================================#
+    # Type/Method (5point, percent cover) : Text
+    # ImageReference : image Id
+    # Code (Substrate, Species) : text
+    # Point, Region - find better way : point in image x,y
+    # UserWhoAnnotated : user reference
+    # Comments / notes : Text
+    #==================================================#
+
+    method=models.TextField()
+    imageReference=models.ForeignKey(stereoImages) # Check this! How to link back to table field
+    code=models.CharField(max_length=200)
+    point=models.PointField() # Do we need a list of points ?  ie 5 point method?
+    userWhoAnnotated=models.ForeignKey(users)
+    comments=models.TextField()

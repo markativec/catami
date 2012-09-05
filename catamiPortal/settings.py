@@ -2,6 +2,7 @@
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
+POSTGIS_VERSION = (1, 5, 2)
 
 ADMINS = (
      ('Dan Marrable', 'd.marrable@ivec.org'),
@@ -11,7 +12,7 @@ MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+        'ENGINE':'django.contrib.gis.db.backends.postgis', #'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
         'NAME': 'Force',                      # Or path to database file if using sqlite3.
         'USER': 'pocock',                      # Not used with sqlite3.
         'PASSWORD': 'qwer789ASDF456zxcv123',                  # Not used with sqlite3.
@@ -115,10 +116,12 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    ''
     # Uncomment the next line to enable the admin:
     'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
     'django.contrib.admindocs',
+    'django.contrib.gis',
     'Force',
 )
 
