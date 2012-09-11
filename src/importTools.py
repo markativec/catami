@@ -78,9 +78,8 @@ class importMetaData():
                 dataModel = auvDeployment(**data)
                 try:
                     dataModel.full_clean()
-                except ValidationError as e:
-                    catamiWebPortal.logging.warning("Possible validation error :: " + e.errno + e.strerror)
-
+                except Exception as e:
+                    catamiWebPortal.logging.warning("Possible validation error :: " + str(e))
                     
                 dataModel.save()
             else:
