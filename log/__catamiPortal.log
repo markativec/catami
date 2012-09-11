@@ -1,4 +1,0 @@
-09/10/2012 11:20:15 AM run for you life
-09/10/2012 11:35:42 AM Importing metadata from /home/marrabld/catamiPortal/test/data/metadatafiles/users.json
-09/10/2012 11:35:42 AM (0.001) SELECT (1) AS "a" FROM "Force_users" WHERE "Force_users"."id" = 1  LIMIT 1; args=(1,)
-09/10/2012 11:35:42 AM (0.001) UPDATE "Force_users" SET "name" = 'Dan Marrable', "title" = 'Captain', "organisation" = 'iVEC', "email" = 'daniel.marrable@ivec.org' WHERE "Force_users"."id" = 1 ; args=(u'Dan Marrable', u'Captain', u'iVEC', u'daniel.marrable@ivec.org', 1)
