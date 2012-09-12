@@ -38,7 +38,41 @@ class importMetaData():
             dataModel.full_clean()
             dataModel.save()
         else:
-            catamiWebPortal.logged.error("No supported fileformat found.  Data not logged :: file extension :: " + fileExtension)
+            catamiWebPortal.logging.error("No supported fileformat found.  Data not logged :: file extension :: " + fileExtension)
+
+    @staticmethod
+    def importImageFromFile(file):
+        '''
+        @brief This function reads in a metadta file that includes users information.
+        @param file The file that holds the metata data.  formats include .json todo:-> .xml .yaml
+        '''
+        catamiWebPortal.logging.info("Importing metadata from " + file)
+        fileName, fileExtension = os.path.splitext(file)
+                
+        if fileExtension == '.json':
+            data = json.load(open(file))
+            dataModel = image(**data)
+            dataModel.full_clean()
+            dataModel.save()
+        else:
+            catamiWebPortal.logging.error("No supported fileformat found.  Data not logged :: file extension :: " + fileExtension)
+
+    @staticmethod
+    def importStereoImagesFromFile(file):
+        '''
+        @brief This function reads in a metadta file that includes users information.
+        @param file The file that holds the metata data.  formats include .json todo:-> .xml .yaml
+        '''
+        catamiWebPortal.logging.info("Importing metadata from " + file)
+        fileName, fileExtension = os.path.splitext(file)
+                
+        if fileExtension == '.json':
+            data = json.load(open(file))
+            dataModel = stereoImages(**data)
+            dataModel.full_clean()
+            dataModel.save()
+        else:
+            catamiWebPortal.logging.error("No supported fileformat found.  Data not logged :: file extension :: " + fileExtension)
 
             
 
@@ -58,7 +92,7 @@ class importMetaData():
             dataModel.full_clean()
             dataModel.save()
         else:
-            catamiWebPortal.logged.error("No supported fileformat found.  Data not logged :: file extension :: " + fileExtension)
+            catamiWebPortal.logging.error("No supported fileformat found.  Data not logged :: file extension :: " + fileExtension)
 
             
 
@@ -85,4 +119,4 @@ class importMetaData():
             else:
                 catamiWebPortal.logging.error("No supported filname found.  Data not logged :: filename :: " + file)
         else:
-            catamiWebPortal.logged.error("No supported fileformat found.  Data not logged :: file extension :: " + fileExtension)
+            catamiWebPortal.logging.error("No supported fileformat found.  Data not logged :: file extension :: " + fileExtension)
