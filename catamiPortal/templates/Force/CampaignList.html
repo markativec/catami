@@ -1,0 +1,9 @@
+{% if campaignList %}
+    <ul>
+        {% for campaign in campaignList %}
+            <li><a href="/polls/">{{ campaign.description }}</a></li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No polls are available.</p>
+{% endif %}
