@@ -104,12 +104,15 @@ ROOT_URLCONF = 'catamiPortal.urls'
 WSGI_APPLICATION = 'catamiPortal.wsgi.application'
 
 TEMPLATE_DIRS = (
+    # this path needs to be edited to work in ops
+    "/Users/markg/Documents/Catami/develop/catami/templates/",
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
 )
 
 INSTALLED_APPS = (
+    'grappelli',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
