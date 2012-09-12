@@ -72,7 +72,7 @@ class campaign(models.Model):
     dateStart=models.DateTimeField()
     dateEnd=models.DateTimeField() # There is a "DateField" do we need time here ?
 
-class users(models.Model):
+class user(models.Model):
     '''
     @breif contains all of the information for the database users
     '''

@@ -22,6 +22,83 @@ from django.contrib.gis.geos import GEOSGeometry
 #==================================================#
 
 class importMetaData():
+    '''
+    @brief This class is used for importing meta data in to the catami database that is stored in a markup file.  Individual models can be populated with importMetaDataFromFile(file) or batched using importMetaDataFromDirectory.
+
+    So far the supported models are:
+
+        campaign.json
+        deployment.json
+        auvdeployment.json
+        images.json
+        stereoImages.json
+        annotations.json
+    '''
+
+    @staticmethod
+    def importMetaDataFromFile(file):
+        '''
+        @brief This function reads in a metadta file that includes campaign information.  Destinction between deployment types is made on the fine name.  <type><deployment>.<supported text> auvdeployment.json
+        @param file The file that holds the metata data.  formats include .json todo:-> .xml .yaml
+        '''
+        catamiWebPortal.logging.info("Importing metadata from " + file)
+        fileName, fileExtension = os.path.splitext(file)
+
+        if fileExtension == '.json':
+            try:
+                data = json.load(open(file))
+            except Exception as e:
+                catamiWebPortal.logging.error("Error opening data file :: " + str(e))
+                
+            if os.path.basename(fileName.upper()) == 'AUVDEPLOYMENT':
+                catamiWebPortal.logging.info("Found valid deployment file")
+                dataModel = auvDeployment(**data)
+            elif os.path.basename(fileName.upper()) == 'ANNOTATIONS':
+                catamiWebPortal.logging.info("Found valid annotation file")
+                dataModel = annotations(**data)
+            elif os.path.basename(fileName.upper()) == 'CAMPAIGN':
+                catamiWebPortal.logging.info("Found valid campaign file")
+                dataModel = campaign(**data)
+            elif os.path.basename(fileName.upper()) == 'IMAGE':
+                catamiWebPortal.logging.info("Found valid image file")
+                dataModel = image(**data)
+            elif os.path.basename(fileName.upper()) == 'STEREOIMAGES':
+                catamiWebPortal.logging.info("Found valid stereo image file")
+                dataModel = stereoImages(**data)
+            elif os.path.basename(fileName.upper()) == 'USER':
+                catamiWebPortal.logging.info("Found valid campaign file")
+                dataModel = user(**data)
+                
+                try:
+                    dataModel.full_clean()
+                except Exception as e:
+                    catamiWebPortal.logging.warning("Possible validation error :: " + str(e))
+                    
+                dataModel.save()
+            else:
+                catamiWebPortal.logging.error("No supported filname found.  Data not logged :: filename :: " + file)
+        else:
+            catamiWebPortal.logging.error("No supported fileformat found.  Data not logged :: file extension :: " + fileExtension)
+
+
+    @staticmethod
+    def importMetaDataFromDirectory(directory):
+        '''
+        @brief This functions is used for parsing all of the supported data files in a directory. Each file must be named with the following syntax <model-name>.<format> eg: stereoImages.json.  This functions will ignore any other files.
+        @param directory is the directory holding the data files including the / eg /home/data/
+        '''
+        listing = os.listdir(directory)
+        catamiWebPortal.logging.info('Found files :: ' + str(listing))
+        for infile in listing:
+            fileName, fileExtension = os.path.splitext(infile)
+            if  fileExtension == '.json':  #@todo: or other supported files
+                catamiWebPortal.importTools.importMetaData.importMetaDataFromFile(directory + infile)
+
+#==================================================#
+# The following functions are redundant.  Will be
+# removed soon
+#==================================================#
+    
 
     @staticmethod
     def importUsersFromFile(file):
@@ -118,5 +195,22 @@ class importMetaData():
                 dataModel.save()
             else:
                 catamiWebPortal.logging.error("No supported filname found.  Data not logged :: filename :: " + file)
+        else:
+            catamiWebPortal.logging.error("No supported fileformat found.  Data not logged :: file extension :: " + fileExtension)
+
+    @staticmethod
+    def importAnnotationsFromFile(file):
+        '''
+        @brief This function reads in a metadta file that includes users information.
+        @param file The file that holds the metata data.  formats include .json todo:-> .xml .yaml
+        '''
+        catamiWebPortal.logging.info("Importing metadata from " + file)
+        fileName, fileExtension = os.path.splitext(file)
+                
+        if fileExtension == '.json':
+            data = json.load(open(file))
+            dataModel = annotations(**data)
+            dataModel.full_clean()
+            dataModel.save()
         else:
             catamiWebPortal.logging.error("No supported fileformat found.  Data not logged :: file extension :: " + fileExtension)
