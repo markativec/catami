@@ -43,40 +43,47 @@ class importMetaData():
         '''
         catamiWebPortal.logging.info("Importing metadata from " + file)
         fileName, fileExtension = os.path.splitext(file)
+        read = True
 
         if fileExtension == '.json':
             try:
                 data = json.load(open(file))
             except Exception as e:
                 catamiWebPortal.logging.error("Error opening data file :: " + str(e))
-                
-            if os.path.basename(fileName.upper()) == 'AUVDEPLOYMENT':
-                catamiWebPortal.logging.info("Found valid deployment file")
+
+            if os.path.basename(fileName.upper()) == 'CAMPAIGN':
+                catamiWebPortal.logging.info("Found valid campaign file" + file)
+                dataModel = campaign(**data)
+            elif os.path.basename(fileName.upper()) == 'DEPLOYMENT':
+                catamiWebPortal.logging.info("Found valid deployment file" + file)
+                dataModel = deployment(**data)
+            elif os.path.basename(fileName.upper()) == 'AUVDEPLOYMENT':
+                catamiWebPortal.logging.info("Found valid deployment file" + file)
                 dataModel = auvDeployment(**data)
             elif os.path.basename(fileName.upper()) == 'ANNOTATIONS':
-                catamiWebPortal.logging.info("Found valid annotation file")
+                catamiWebPortal.logging.info("Found valid annotation file" + file)
                 dataModel = annotations(**data)
-            elif os.path.basename(fileName.upper()) == 'CAMPAIGN':
-                catamiWebPortal.logging.info("Found valid campaign file")
-                dataModel = campaign(**data)
             elif os.path.basename(fileName.upper()) == 'IMAGE':
-                catamiWebPortal.logging.info("Found valid image file")
+                catamiWebPortal.logging.info("Found valid image file" + file)
                 dataModel = image(**data)
             elif os.path.basename(fileName.upper()) == 'STEREOIMAGES':
-                catamiWebPortal.logging.info("Found valid stereo image file")
+                catamiWebPortal.logging.info("Found valid stereo image file" + file)
                 dataModel = stereoImages(**data)
             elif os.path.basename(fileName.upper()) == 'USER':
-                catamiWebPortal.logging.info("Found valid campaign file")
-                dataModel = user(**data)
-                
+                catamiWebPortal.logging.info("Found valid campaign file" + file)
+                dataModel = user(**data)                
+            else:
+                catamiWebPortal.logging.error("No supported filname found.  Data not logged :: filename :: " + file)
+                read = False
+            if read == True:    
                 try:
                     dataModel.full_clean()
                 except Exception as e:
                     catamiWebPortal.logging.warning("Possible validation error :: " + str(e))
-                    
-                dataModel.save()
-            else:
-                catamiWebPortal.logging.error("No supported filname found.  Data not logged :: filename :: " + file)
+                try:    
+                    dataModel.save()
+                except Exception as e:
+                    catamiWebPortal.logging.error("Couldn't save :: " + str(e))
         else:
             catamiWebPortal.logging.error("No supported fileformat found.  Data not logged :: file extension :: " + fileExtension)
 

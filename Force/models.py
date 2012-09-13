@@ -13,43 +13,6 @@ import dbarray
 #
 #==================================================#
 
-class deployment(models.Model):
-    ''' 
-    @brief This is the abstract deployment class.  
-    '''
-    startPosition=models.PointField()
-    startTimeStamp=models.DateTimeField()
-    endTimeStamp=models.DateTimeField()
-    missionAim=models.TextField()
-    minDepth=models.FloatField() # IT seems there is no double in Django
-    maxDepth=models.FloatField()
-
-    #class Meta:
-    #    abstract = True
-
-class image(models.Model):
-    '''
-    @brief This is the abstract image class, mono images reference use the left imgage field
-    '''
-
-    # ??? Maybe make an image reference class and instantiate left and right instances ?????
-
-#!!!!!!    deployment=models.ForeignKey(deployment)
-    leftThumbnailReference=models.URLField() #!!!!ImageField(upload_to='photos/%Y/%m/%d')
-    leftImageReference=models.URLField()
-    dateTime=models.DateTimeField()
-    imagePosition=models.PointField()
-    temperature=models.FloatField()
-    salinity=models.FloatField()
-    pitch=models.FloatField()
-    roll=models.FloatField()
-    yaw=models.FloatField()
-    altitude=models.FloatField()
-    depth=models.FloatField()
-
-    #class Meta:
-    #    abstract = True
-
 class campaign(models.Model):
     '''
     @brief A campain describes a field campaign that has many deployments.
@@ -68,10 +31,47 @@ class campaign(models.Model):
     associatedResearchers=dbarray.TextArrayField()
     associatedPublications=dbarray.TextArrayField()
     associatedResearchGrant=dbarray.TextArrayField()
-#!!!!!!!    deployments=models.ForeignKey(deployment)  !!!!!!!! Removed for now
     dateStart=models.DateTimeField()
     dateEnd=models.DateTimeField() # There is a "DateField" do we need time here ?
 
+class deployment(models.Model):
+    ''' 
+    @brief This is the abstract deployment class.  
+    '''
+    startPosition=models.PointField()
+    startTimeStamp=models.DateTimeField()
+    endTimeStamp=models.DateTimeField()
+    missionAim=models.TextField()
+    minDepth=models.FloatField()
+    maxDepth=models.FloatField()
+    campaign=models.ForeignKey(campaign)
+
+    #class Meta:
+    #    abstract = True
+    
+class image(models.Model):
+    '''
+    @brief This is the abstract image class, mono images reference use the left imgage field
+    '''
+
+    # ??? Maybe make an image reference class and instantiate left and right instances ?????
+
+    deployment=models.ForeignKey(deployment)
+    leftThumbnailReference=models.URLField() #!!!!ImageField(upload_to='photos/%Y/%m/%d')
+    leftImageReference=models.URLField()
+    dateTime=models.DateTimeField()
+    imagePosition=models.PointField()
+    temperature=models.FloatField()
+    salinity=models.FloatField()
+    pitch=models.FloatField()
+    roll=models.FloatField()
+    yaw=models.FloatField()
+    altitude=models.FloatField()
+    depth=models.FloatField()
+
+    #class Meta:
+    #    abstract = True
+    
 class user(models.Model):
     '''
     @breif contains all of the information for the database users
@@ -150,8 +150,8 @@ class annotations(models.Model):
     #==================================================#
 
     method=models.TextField()
-#!!!!!    imageReference=models.ForeignKey(stereoImages) # Check this! How to link back to table field
+    imageReference=models.ForeignKey(image) # Check this! How to link back to table field
     code=models.CharField(max_length=200)
     point=models.PointField() # Do we need a list of points ?  ie 5 point method?
-#!!!!!    userWhoAnnotated=models.ForeignKey(users)
+    userWhoAnnotated=models.ForeignKey(user)
     comments=models.TextField()
