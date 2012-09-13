@@ -1,5 +1,20 @@
 # Create your views here.
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import render_to_response, render, redirect
+from Force.forms import CampaignForm
+from django.core.urlresolvers import reverse
 
 def index(request):
     return HttpResponse("Hello World, from the CATAMI team.  We are not up and running yet, you can follow us here for now https://plus.google.com/u/0/b/104765819602128308640/104765819602128308640/posts")
+
+def add_campaign(request):
+    if request.method == 'POST': # If the form has been submitted...
+        form = CampaignForm(request.POST) # A form bound to the POST data
+        if form.is_valid(): # All validation rules pass
+            # Process the data in form.cleaned_data
+            form.save();
+            return redirect('/Force/campaigns') # Redirect after POST
+    else:
+        form = CampaignForm() # An unbound form
+
+    return render(request, 'Force/AddCampaign.html', {'form': form})
