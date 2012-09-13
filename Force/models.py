@@ -1,6 +1,7 @@
 from django.db import models
 #from django_postgresql.manager import PgManager
 from django.contrib.gis.db import models
+from django.contrib.gis.geos import GEOSGeometry
 
 import dbarray
 
@@ -33,8 +34,8 @@ class image(models.Model):
 
     # ??? Maybe make an image reference class and instantiate left and right instances ?????
 
-    deployment=models.ForeignKey(deployment)
-    leftThumbnailReference=models.ImageField(upload_to='photos/%Y/%m/%d')
+#!!!!!!    deployment=models.ForeignKey(deployment)
+    leftThumbnailReference=models.URLField() #!!!!ImageField(upload_to='photos/%Y/%m/%d')
     leftImageReference=models.URLField()
     dateTime=models.DateTimeField()
     imagePosition=models.PointField()
@@ -67,11 +68,11 @@ class campaign(models.Model):
     associatedResearchers=dbarray.TextArrayField()
     associatedPublications=dbarray.TextArrayField()
     associatedResearchGrant=dbarray.TextArrayField()
-    deployments=models.ForeignKey(deployment)
+#!!!!!!!    deployments=models.ForeignKey(deployment)  !!!!!!!! Removed for now
     dateStart=models.DateTimeField()
     dateEnd=models.DateTimeField() # There is a "DateField" do we need time here ?
 
-class users(models.Model):
+class user(models.Model):
     '''
     @breif contains all of the information for the database users
     '''
@@ -96,7 +97,7 @@ class auvDeployment(deployment):
     # distanceCovered : <double>
     # startTimeStamp : <dateTime>
     # endTimeStamp : <dateTime>
-    # transectShape : <>
+    # transectShape : <Polygon>
     # missionAim : <Text>
     # minDepth : <double>
     # maxDepth : <double> 
@@ -129,7 +130,7 @@ class stereoImages(image):
     # depth : <real>
     #==================================================#
 
-    rightThumbnailReference=models.ImageField(upload_to='photos/%Y/%m/%d')
+    rightThumbnailReference=models.URLField()#!!!!!!!ImageField(upload_to='photos/%Y/%m/%d')
     rightImageReference=models.URLField()
 
 class annotations(models.Model):
@@ -149,8 +150,8 @@ class annotations(models.Model):
     #==================================================#
 
     method=models.TextField()
-    imageReference=models.ForeignKey(stereoImages) # Check this! How to link back to table field
+#!!!!!    imageReference=models.ForeignKey(stereoImages) # Check this! How to link back to table field
     code=models.CharField(max_length=200)
     point=models.PointField() # Do we need a list of points ?  ie 5 point method?
-    userWhoAnnotated=models.ForeignKey(users)
+#!!!!!    userWhoAnnotated=models.ForeignKey(users)
     comments=models.TextField()

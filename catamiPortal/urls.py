@@ -15,6 +15,7 @@ urlpatterns = patterns('',
     
     url(r'^main/auvdeployments/$', 'Force.views.auvdeployments'),
 
+    url(r'Force/', include('Force.urls')),
     # Uncomment the admin/doc line below to enable admin documentation:
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
     (r'^grappelli/', include('grappelli.urls')),
