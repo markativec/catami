@@ -42,9 +42,8 @@ class deployment(models.Model):
     startTimeStamp=models.DateTimeField()
     endTimeStamp=models.DateTimeField()
     missionAim=models.TextField()
-    minDepth=models.FloatField()
+    minDepth=models.FloatField() # IT seems there is no double in Django
     maxDepth=models.FloatField()
-    campaign=models.ForeignKey(campaign)
 
     #class Meta:
     #    abstract = True
@@ -56,7 +55,7 @@ class image(models.Model):
 
     # ??? Maybe make an image reference class and instantiate left and right instances ?????
 
-    deployment=models.ForeignKey(deployment)
+#!!!!!!    deployment=models.ForeignKey(deployment)
     leftThumbnailReference=models.URLField() #!!!!ImageField(upload_to='photos/%Y/%m/%d')
     leftImageReference=models.URLField()
     dateTime=models.DateTimeField()
@@ -71,7 +70,29 @@ class image(models.Model):
 
     #class Meta:
     #    abstract = True
-    
+
+class campaign(models.Model):
+    '''
+    @brief A campain describes a field campaign that has many deployments.
+    '''
+    #==================================================#
+    # description <Text> : is a general description of the campaign
+    # associateResearchers <array> :
+    # associatedPublications <array> :
+    # associatedResearchGrant <array> :
+    # deployments <unique id> :
+    # date start <dateTime> :
+    # date End <dateTime> : 
+    #==================================================#
+
+    description=models.TextField()
+    associatedResearchers=dbarray.TextArrayField()
+    associatedPublications=dbarray.TextArrayField()
+    associatedResearchGrant=dbarray.TextArrayField()
+#!!!!!!!    deployments=models.ForeignKey(deployment)  !!!!!!!! Removed for now
+    dateStart=models.DateTimeField()
+    dateEnd=models.DateTimeField() # There is a "DateField" do we need time here ?
+
 class user(models.Model):
     '''
     @breif contains all of the information for the database users
@@ -150,8 +171,8 @@ class annotations(models.Model):
     #==================================================#
 
     method=models.TextField()
-    imageReference=models.ForeignKey(image) # Check this! How to link back to table field
+#!!!!!    imageReference=models.ForeignKey(stereoImages) # Check this! How to link back to table field
     code=models.CharField(max_length=200)
     point=models.PointField() # Do we need a list of points ?  ie 5 point method?
-    userWhoAnnotated=models.ForeignKey(user)
+#!!!!!    userWhoAnnotated=models.ForeignKey(users)
     comments=models.TextField()
